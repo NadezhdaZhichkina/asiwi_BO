@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: Case Memory API
+  version: 1.1.1
+servers:
+  - url: https://your-api-url.on.railway.app
+paths:
+  /case:
+    post:
+      summary: Save new case
+      operationId: saveCase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user
+                - question
+                - solution
+              properties:
+                user:
+                  type: string
+                document_type:
+                  type: string
+                question:
+                  type: string
+                solution:
+                  type: string
+                tags:
+                  type: string
+      responses:
+        "200":
+          description: Case saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
+    get:
+      summary: Find similar cases by question only
+      operationId: findSimilarCases
+      parameters:
+        - name: question
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: document_type
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of similar cases based on question similarity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                        solution:
+                          type: string
+                        document_type:
+                          type: string
+                        tags:
+                          type: string
+                        match_ratio:
+                          type: number
+                          format: float
+                          description: Value from 0.0 (no match) to 1.0 (perfect match)
+
+  /cases:
+    get:
+      summary: Get cases in batches (200 per request)
+      operationId: getCasesBatch
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A batch of cases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
